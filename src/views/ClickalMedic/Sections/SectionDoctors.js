@@ -64,9 +64,13 @@ export default function TeamSection(props) {
                           <h4 className={classes.cardTitle}>
                             { doctors[(x*3)+y]?.name } { doctors[(x*3)+y]?.lastName }
                             <br />
-                            <small className={classes.smallTitle}>{ doctors[(x*3)+y]?.specialistDetails[0]?.name }</small>
+                            <small className={classes.smallTitle}>{ 
+                              doctors[(x*3)+y]?.specialistDetails && 
+                              doctors[(x*3)+y]?.specialistDetails[0]?.name }</small>
                             <br />
-                            <small className={classes.smallTitle}>{ doctors[(x*3)+y]?.CityDetails[0]?.name }</small>
+                            <small className={classes.smallTitle}>{ 
+                              doctors[(x*3)+y]?.CityDetails &&
+                              doctors[(x*3)+y]?.CityDetails[0]?.name }</small>
                           </h4>
                           <CardBody>
                             <p className={classes.description}>
