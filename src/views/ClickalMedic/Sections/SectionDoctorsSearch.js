@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Fragment} from "react";
 // nodejs library that concatenates classes
 //import classNames from "classnames";
 // @material-ui/core components
@@ -59,6 +59,7 @@ export default function TeamSection(props) {
   const [ selectedDoctor, setSelectedDoctor ] = React.useState(null)
 
   const selectDoctor = (doctor) => {
+      console.log("doctor",doctor)
       setSelectedDoctor(doctor)
       setDrawerOpen(true)
   }
@@ -75,6 +76,20 @@ export default function TeamSection(props) {
     <Button justIcon color="transparent" ><i style={{ fontSize:"12px" }}  className={classes.socials + " fas fa-star"} /></Button>
     <Button justIcon color="transparent" ><i style={{ fontSize:"12px" }}  className={classes.socials + " fas fa-star"} /></Button>              
   </>
+
+    const minutesToHours = (minutes) => {
+
+        const hours = Math.floor(minutes/60)
+
+        const minutesResult = minutes - (60 * Math.floor(minutes/60))
+
+        const stringhours =  hours < 10 ?  "0" + String(hours) : String(hours)
+
+        const stringMinutes = minutesResult < 10 ? "0" + String(minutesResult) : String(minutesResult)
+
+        return  stringhours + ":" + stringMinutes
+
+    }
 
   return (
     <>
@@ -141,36 +156,76 @@ export default function TeamSection(props) {
             }
         </div>
 
+        <br/>
+
         <React.Fragment key={"anchor"}>
           <Drawer anchor={"right"} open={drawerOpen} onClose={()=>setDrawerOpen(false)}>
             <div style={{width:"25em"}} >
             
             {   selectedDoctor &&             
                 <GridContainer>
-                    <GridItem item>
+                    <GridItem style={{background:"#033856", padding:20}} item>
                         <div style={{display:"flex",flexDirection:"column",alignItems:"center"}} >              
-                            <h4> { selectedDoctor?.name } { selectedDoctor?.lastName } </h4>
+                            <h4 style={{color:"white",fontWeight:"bold"}} > { selectedDoctor?.name } { selectedDoctor?.lastName } </h4>
                             <img
                                 style={{ minWidth:"115px", minHeight:"115px", width:"180px", height:"180px" }}
                                 src={ process.env.REACT_APP_SERVE_IMAGE + selectedDoctor?.picture }
                                 alt="..."
                                 className={classes.imgRoundedCircle + " " + classes.imgFluid}
-                            />
-                            <Typography gutterBottom variant="h5" component="h2">
-                                Especializaciones:
-                            </Typography>
-                            {
-                                selectedDoctor.specialistDetails.map( specialist => (
-                                    <>
-                                        <Typography gutterBottom variant="caption" >
-                                                { specialist?.name } 
-                                        </Typography>
-                                    </>
-                                ))
-                            }
+                            />                          
                         </div>
                     </GridItem>
-                    
+
+                    <br/>
+
+                    <GridItem style={{textAlign:"center", marginTop:50}} item>
+                        <Typography gutterBottom variant="h5" component="h2">
+                                Especializaciones:
+                        </Typography>                           
+                    </GridItem>
+
+                    <br/>
+
+                    <GridItem style={{textAlign:"center"}} item>
+                        {
+                            selectedDoctor.specialistDetails.map( specialist => (
+                                <>
+                                    <Typography gutterBottom variant="caption" >
+                                            { specialist?.name } 
+                                    </Typography>
+                                </>
+                            ))
+                        }
+                    </GridItem>
+
+                    <br/>
+
+                    { selectedDoctor?.settings &&
+                        <Fragment>
+                            <GridItem style={{textAlign:"center"}} item>
+                                <Typography color="primary" gutterBottom variant="caption" >
+                                    Horario de atención:
+                                </Typography>                                
+                            </GridItem>
+                            <GridItem style={{textAlign:"center"}}  item>
+                                <Typography style={{fontWeight:"bold"}} color="secondary" gutterBottom variant="caption" >
+                                    { selectedDoctor?.settings.daysRange.indexOf("Mon") > -1 && "Lun," }
+                                    { selectedDoctor?.settings.daysRange.indexOf("Tue") > -1 && "Mar," }
+                                    { selectedDoctor?.settings.daysRange.indexOf("Wed") > -1 && "Mie," }
+                                    { selectedDoctor?.settings.daysRange.indexOf("Thurs") > -1 && "Jue," }
+                                    { selectedDoctor?.settings.daysRange.indexOf("Frid") > -1 && "Vie," }
+                                    { selectedDoctor?.settings.daysRange.indexOf("Sat") > -1 && "Sab," }
+                                    { selectedDoctor?.settings.daysRange.indexOf("Sun") > -1 && "Dom" }
+                                </Typography>
+                            </GridItem>
+                            <GridItem style={{textAlign:"center"}}  item>
+                                <Typography style={{fontWeight:"bold"}} color="error" gutterBottom variant="caption" >
+                                   { minutesToHours(selectedDoctor?.settings.hoursRange[0])} - { minutesToHours(selectedDoctor?.settings.hoursRange[1]) }
+                                </Typography>
+                            </GridItem>
+                        </Fragment>                        
+                    }
+
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container justify="space-around">        
 
