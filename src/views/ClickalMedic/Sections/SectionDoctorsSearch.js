@@ -9,7 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 // core components
 //import GridContainer from "components/Grid/GridContainer.js";
 import Drawer from '@material-ui/core/Drawer';
-import { Grid } from '@material-ui/core';
+import { Grid, Chip } from '@material-ui/core';
 import GridItem from "components/Grid/GridItem.js";
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -26,6 +26,11 @@ import styles from "assets/jss/material-kit-react/views/landingPageSections/team
 import stylesa from "assets/jss/material-kit-react/views/componentsSections/typographyStyle.js";
 import stylesb from "assets/jss/material-kit-react/views/landingPageSections/productStyle.js";
 
+
+import { getDaySchedule } from '../../../actions/doctors'
+
+import moment from 'moment';
+import Swal from 'sweetalert2' 
 
 //picker plugin
 
@@ -45,7 +50,7 @@ const useStyles = makeStyles({
   ...stylesa, ...stylesb
 });
 
-export default function TeamSection(props) {
+export default function SectionDoctorsSearch(props) {
   const classes = useStyles();
 
   const { doctors } = props
@@ -57,6 +62,8 @@ export default function TeamSection(props) {
   const [ drawerOpen2, setDrawerOpen2 ] = React.useState(false)
 
   const [ selectedDoctor, setSelectedDoctor ] = React.useState(null)
+
+  const [ selectedDate, setSelectedDate ] = React.useState(null)
 
   const selectDoctor = (doctor) => {
       console.log("doctor",doctor)
@@ -233,12 +240,45 @@ export default function TeamSection(props) {
                             margin="normal"
                             id="date-picker-dialog"
                             label="Fecha para agendar cita"
-                            value={null}
-                            format="MM/dd/yyyy"                          
-                            onChange={(date)=>console.log("birthDate",date)}
+                            format="MM/dd/yyyy"   
+                            value={selectedDate}                       
+                            onChange={(date)=>{
+                                setSelectedDate(date)
+                                console.log("selectedDoctor",selectedDoctor)
+                                getDaySchedule(selectedDoctor.id, moment(date).format("YYYY-MM-DD"), (success,error)=>{
+                                    if(success){
+                                        console.log("success",success)
+
+                                        const defaultInterval = 60
+
+                                        let startTime = selectedDoctor.settings.hoursRange[0]
+
+                                        const endTime = selectedDoctor.selectedDoctor[1]
+
+                                        // Number(time[0]*60) + Number(time[1])
+                                        success.data.appointments.forEach( appointment => {
+                                            //console.log(moment(appointment.appointmentDate).hour() + ':' + moment(appointment.appointmentDate).minutes())
+                                            console.log(Number(moment(appointment.appointmentDate).hour()*60) + Number(moment(appointment.appointmentDate).minutes()))
+                            
+                                        }) 
+
+                                        success.data.annotations.forEach( annotation =>{
+                                            //console.log(moment(annotation.annotationDate).hour() + ':' + moment(annotation.annotationDate).minutes())
+                                            //console.log(moment(annotation.annotationToDate).hour() + ':' + moment(annotation.annotationToDate).minutes())
+                                            console.log(Number(moment(annotation.annotationDate).hour()*60) + Number(moment(annotation.annotationDate).minutes()))
+                                            console.log(Number(moment(annotation.annotationToDate).hour()*60) + Number(moment(annotation.annotationToDate).minutes()))
+                                        })
+                                    }
+                                    if(error){
+                                       Swal.fire("Oops","sucedio un error","error")
+                                    }
+                                })
+
+                            }}
                             KeyboardButtonProps={{
                             'aria-label': 'change date',
                             }}
+                            minDate={ new moment().add('days', 1) }
                         />
 
                     </Grid>

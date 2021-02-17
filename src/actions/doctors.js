@@ -33,6 +33,26 @@ import api from "middleware/api";
     }
   }
 
+  export function getDaySchedule(id,date,cb=null) {
+    
+    
+    //return dispatch => {
+      return api.getData("doctorDaySchedule"+"/"+id+"/"+date)
+        .then(( response ) => {
+
+          //dispatch(setDoctors(response?.data || []));
+          
+          if(cb) { cb(response,false) }
+          
+        })
+        .catch(err => { console.log("Error: ", err)
+          
+          if(cb) { cb(false,true) }
+        
+      });
+    //}
+  }
+
 
  
   
