@@ -20,6 +20,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import GridContainer from "components/Grid/GridContainer.js";
 
+import DoneIcon from '@material-ui/icons/Done';
+
 
 import styles from "assets/jss/material-kit-react/views/landingPageSections/teamStyle.js";
 
@@ -64,6 +66,8 @@ export default function SectionDoctorsSearch(props) {
   const [ selectedDoctor, setSelectedDoctor ] = React.useState(null)
 
   const [ selectedDate, setSelectedDate ] = React.useState(null)
+
+  const [ avaliableHours, setAvaliableHours ] = React.useState([])
 
   const selectDoctor = (doctor) => {
       console.log("doctor",doctor)
@@ -166,7 +170,10 @@ export default function SectionDoctorsSearch(props) {
         <br/>
 
         <React.Fragment key={"anchor"}>
-          <Drawer anchor={"right"} open={drawerOpen} onClose={()=>setDrawerOpen(false)}>
+          <Drawer anchor={"right"} open={drawerOpen} onClose={()=>{
+              setAvaliableHours([])
+              setDrawerOpen(false)
+            }}>
             <div style={{width:"25em"}} >
             
             {   selectedDoctor &&             
@@ -247,27 +254,69 @@ export default function SectionDoctorsSearch(props) {
                                 console.log("selectedDoctor",selectedDoctor)
                                 getDaySchedule(selectedDoctor.id, moment(date).format("YYYY-MM-DD"), (success,error)=>{
                                     if(success){
-                                        console.log("success",success)
+                                        //console.log("success",success)
+
+                                        const CavaliablesHours = []
 
                                         const defaultInterval = 60
 
+                                        //console.log("selectedDoctor.settings",selectedDoctor.settings)
+
                                         let startTime = selectedDoctor.settings.hoursRange[0]
 
-                                        const endTime = selectedDoctor.selectedDoctor[1]
+                                        const endTime = selectedDoctor.settings.hoursRange[1]
 
-                                        // Number(time[0]*60) + Number(time[1])
-                                        success.data.appointments.forEach( appointment => {
-                                            //console.log(moment(appointment.appointmentDate).hour() + ':' + moment(appointment.appointmentDate).minutes())
-                                            console.log(Number(moment(appointment.appointmentDate).hour()*60) + Number(moment(appointment.appointmentDate).minutes()))
-                            
-                                        }) 
+                                        //console.log(startTime,endTime)
 
-                                        success.data.annotations.forEach( annotation =>{
-                                            //console.log(moment(annotation.annotationDate).hour() + ':' + moment(annotation.annotationDate).minutes())
-                                            //console.log(moment(annotation.annotationToDate).hour() + ':' + moment(annotation.annotationToDate).minutes())
-                                            console.log(Number(moment(annotation.annotationDate).hour()*60) + Number(moment(annotation.annotationDate).minutes()))
-                                            console.log(Number(moment(annotation.annotationToDate).hour()*60) + Number(moment(annotation.annotationToDate).minutes()))
-                                        })
+                                        while( startTime <  endTime )
+                                        {
+                                            const hoursToSchedule = [startTime,startTime+defaultInterval]
+
+                                            console.log("hoursToSchedule",hoursToSchedule)
+
+                                            let add = true
+                                            // Number(time[0]*60) + Number(time[1])
+                                            success.data.appointments && success.data.appointments.forEach( appointment => {
+                                                //console.log(moment(appointment.appointmentDate).hour() + ':' + moment(appointment.appointmentDate).minutes())
+                                                //console.log(Number(moment(appointment.appointmentDate).hour()*60) + Number(moment(appointment.appointmentDate).minutes()))
+                                                
+                                                const appointmentTime = Number(moment(appointment.appointmentDate).hour()*60) + Number(moment(appointment.appointmentDate).minutes())
+                                                
+                                                //console.log(appointmentTime,appointmentTime+60)
+
+                                                if( ( hoursToSchedule[0] >= appointmentTime && hoursToSchedule[0] <= appointmentTime+60 )||
+                                                    hoursToSchedule[1] >= appointmentTime && hoursToSchedule[1] <= appointmentTime+60 ){
+                                                    add = false
+                                                }
+                                
+                                            }) 
+
+                                            success.data.annotations && success.data.annotations.forEach( annotation =>{
+                                                //console.log(Number(moment(annotation.annotationDate).hour()*60) + Number(moment(annotation.annotationDate).minutes()))
+                                                //console.log(Number(moment(annotation.annotationToDate).hour()*60) + Number(moment(annotation.annotationToDate).minutes()))
+
+                                                const initialDate = Number(moment(annotation.annotationDate).hour()*60) + Number(moment(annotation.annotationDate).minutes())
+                                                const endDate = Number(moment(annotation.annotationToDate).hour()*60) + Number(moment(annotation.annotationToDate).minutes())
+
+                                                //console.log(initialDate,endDate)
+
+                                                if( ( hoursToSchedule[0] >= initialDate && hoursToSchedule[0] <= endDate)||
+                                                hoursToSchedule[1] >= initialDate && hoursToSchedule[1] <= endDate ){
+                                                    add = false
+                                                }
+                                            })
+
+                                            if(add){
+                                                CavaliablesHours.push(hoursToSchedule)
+                                            }
+
+                                            startTime += defaultInterval
+                                        }
+                                        
+                                        //console.log("avaliablesHours",CavaliablesHours)
+
+                                        setAvaliableHours(CavaliablesHours)
+                                        
                                     }
                                     if(error){
                                        Swal.fire("Oops","sucedio un error","error")
@@ -278,11 +327,18 @@ export default function SectionDoctorsSearch(props) {
                             KeyboardButtonProps={{
                             'aria-label': 'change date',
                             }}
-                            minDate={ new moment().add('days', 1) }
+                            //minDate={ new moment().add('days', 1) }
                         />
 
                     </Grid>
                     </MuiPickersUtilsProvider>
+                    
+                    <Grid container style={{marginLeft:18}} >   
+                    {
+                        avaliableHours.map( avaliable => <Chip avatar={<DoneIcon/>} label={`${ minutesToHours(avaliable[0]) } -  ${ minutesToHours(avaliable[1]) }`}
+                          onClick={()=>{}} style={{margin:5}}  variant="outlined" />  )
+                    }
+                    </Grid>
 
                 </GridContainer>
             }
