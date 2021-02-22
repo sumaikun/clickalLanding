@@ -43,6 +43,9 @@ import {
   
   import DateFnsUtils from '@date-io/date-fns';
 
+//subcomponents
+import SectionPatientForm from './SectionPatientForm'
+
 
 const useStyles = makeStyles({
   ...styles,
@@ -68,6 +71,8 @@ export default function SectionDoctorsSearch(props) {
   const [ selectedDate, setSelectedDate ] = React.useState(null)
 
   const [ avaliableHours, setAvaliableHours ] = React.useState([])
+
+  const [ openForm, setOpenForm ] = React.useState(false)
 
   const selectDoctor = (doctor) => {
       console.log("doctor",doctor)
@@ -272,7 +277,7 @@ export default function SectionDoctorsSearch(props) {
                                         {
                                             const hoursToSchedule = [startTime,startTime+defaultInterval]
 
-                                            console.log("hoursToSchedule",hoursToSchedule)
+                                            //console.log("hoursToSchedule",hoursToSchedule)
 
                                             let add = true
                                             // Number(time[0]*60) + Number(time[1])
@@ -336,7 +341,11 @@ export default function SectionDoctorsSearch(props) {
                     <Grid container style={{marginLeft:18}} >   
                     {
                         avaliableHours.map( avaliable => <Chip avatar={<DoneIcon/>} label={`${ minutesToHours(avaliable[0]) } -  ${ minutesToHours(avaliable[1]) }`}
-                          onClick={()=>{}} style={{margin:5}}  variant="outlined" />  )
+                            onClick={()=>{
+                                console.log("clicked")
+                                setOpenForm(true);  
+                            }}
+                        style={{margin:5}}  variant="outlined" />  )
                     }
                     </Grid>
 
@@ -389,6 +398,10 @@ export default function SectionDoctorsSearch(props) {
             </div>
           </Drawer>
         </React.Fragment>
+
+        <SectionPatientForm  open={openForm} setOpen={(option)=>{
+            setOpenForm(option);
+        }} />
     
     
     </>
