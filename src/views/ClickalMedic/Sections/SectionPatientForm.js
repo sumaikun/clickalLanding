@@ -11,12 +11,9 @@ import  api  from '../../../middleware/api'
 
 export default function SectionPatientForm(props) {
 
-  const { open, setOpen } = props;
+  const { open, setOpen, appointmentDate } = props;
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
+  
   const handleClose = () => {
     setOpen(false);
   };
@@ -40,9 +37,6 @@ export default function SectionPatientForm(props) {
 
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Open form dialog
-      </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">¡Solo un paso mas!</DialogTitle>
         <DialogContent>

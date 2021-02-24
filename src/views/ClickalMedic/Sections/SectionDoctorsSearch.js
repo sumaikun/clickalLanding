@@ -45,6 +45,7 @@ import {
 
 //subcomponents
 import SectionPatientForm from './SectionPatientForm'
+import { createNullishCoalesce } from "typescript";
 
 
 const useStyles = makeStyles({
@@ -70,6 +71,8 @@ export default function SectionDoctorsSearch(props) {
 
   const [ selectedDate, setSelectedDate ] = React.useState(null)
 
+  const [ appointmentDate, setAppointmentDate ] = React.useState(null)
+
   const [ avaliableHours, setAvaliableHours ] = React.useState([])
 
   const [ openForm, setOpenForm ] = React.useState(false)
@@ -86,11 +89,11 @@ export default function SectionDoctorsSearch(props) {
 }
 
   const startsQualification = <>
-    <Button justIcon color="transparent" ><i style={{ fontSize:"12px" }}  className={classes.socials + " fas fa-star"} /></Button>
-    <Button justIcon color="transparent" ><i style={{ fontSize:"12px" }}  className={classes.socials + " fas fa-star"} /></Button>
-    <Button justIcon color="transparent" ><i style={{ fontSize:"12px" }}  className={classes.socials + " fas fa-star"} /></Button>
-    <Button justIcon color="transparent" ><i style={{ fontSize:"12px" }}  className={classes.socials + " fas fa-star"} /></Button>
-    <Button justIcon color="transparent" ><i style={{ fontSize:"12px" }}  className={classes.socials + " fas fa-star"} /></Button>              
+    <Button justIcon color="transparent" ><i  className={classes.socials + " fas fa-star"} /></Button>
+    <Button justIcon color="transparent" ><i  className={classes.socials + " fas fa-star"} /></Button>
+    <Button justIcon color="transparent" ><i  className={classes.socials + " fas fa-star"} /></Button>
+    <Button justIcon color="transparent" ><i  className={classes.socials + " fas fa-star"} /></Button>
+    <Button justIcon color="transparent" ><i  className={classes.socials + " fas fa-star"} /></Button>              
   </>
 
     const minutesToHours = (minutes) => {
@@ -109,67 +112,62 @@ export default function SectionDoctorsSearch(props) {
 
   return (
     <>
-        <div className={classes.section}  style={{ padding:"25px 0px" }} >
+        <div className={classes.section} id="search-doctor-container" style={{ padding:"25px 0px" }} >
         <h2 className={classes.title}>Resultados</h2>
         
-            {
-                Array.from(Array(Math.ceil(doctors.length/3)).keys()).map( x => (
-                    <Grid
-                    spacing={2}
-                    container
-                >
-        
-                    {
-                        Array.from(Array(3).keys()).map( y => ( doctors[(x*3)+y] && 
-                            <GridItem style={{ display:"flex", justifyContent:"center", alignItems:"center",  flexDirection:"row", maxHeight:"434.5px", marginTop:"45px" }}
-                            key={doctors[(x*3)+y]?.id} xs={12} sm={6} md={4} item>
-                                <Card className={classes.root}>
-                                    <CardActionArea>
-                                        <CardMedia
-                                        component="img"
-                                        alt="Clickal doctor"
-                                        height="140"
-                                        image={ process.env.REACT_APP_SERVE_IMAGE + doctors[(x*3)+y]?.picture }
-                                        title="Clickal doctor"
-                                        />
-                                        <CardContent style={{ height:"198px", overflow:"scroll" }} >
+            <Grid  spacing={5} container  style={{padding:20}}>
+                    
+                {doctors.map( doctor =>
+                        <GridItem style={{ display:"flex", justifyContent:"center", alignItems:"center",  flexDirection:"row", maxHeight:"434.5px", marginTop:"45px" }}
+                        key={doctor?.id} xs={12} sm={6} md={6} lg={4} item>
+                            <Card className={classes.root}>
+                                <CardActionArea>
+                                    <CardMedia
+                                    component="img"
+                                    alt="Clickal doctor"
+                                    height="140"
+                                    image={ process.env.REACT_APP_SERVE_IMAGE + doctor?.picture }
+                                    title="Clickal doctor"
+                                    />
+                                    <CardContent>
+                                        <div className="doctor-content" style={{ height:"198px", overflow:"scroll" }}>
                                             <Typography gutterBottom variant="h5" component="h2">
-                                                { doctors[(x*3)+y]?.name } { doctors[(x*3)+y]?.lastName }
+                                                { doctor?.name } { doctor?.lastName }
                                             </Typography>
                                             <Typography variant="caption" display="block" gutterBottom>
-                                                {doctors[(x*3)+y]?.specialistDetails[0]?.name }
+                                                {doctor?.specialistDetails[0]?.name }
                                             </Typography>
                                             <Typography variant="caption" display="block" gutterBottom>
-                                                { doctors[(x*3)+y]?.CityDetails[0]?.name }
+                                                { doctor?.CityDetails[0]?.name }
                                             </Typography>                                    
                                             <Typography variant="body2" color="textSecondary" component="p">
-                                                { doctors[(x*3)+y]?.aboutDoctor }
+                                                { doctor?.aboutDoctor }
                                             </Typography>
-                                        </CardContent>
-                                    </CardActionArea>
-                                    <CardActions style={{ display:"flex", justifyContent:"center", alignItems:"center",  flexDirection:"column" }} >
-                                        
-                                        <div >
-                                        { startsQualification }
-                                        </div>
-                                        <div>
-                                            <Button size="small" color="primary" onClick={()=>selectDoctor(doctors[(x*3)+y])} >
-                                                Agendar cita
-                                            </Button>
-                                            <Button size="small" color="primary" onClick={()=>checkDoctorComments(doctors[(x*3)+y])} >
-                                                Comentarios
-                                            </Button>
-                                        </div>                                    
+                                        </div>                                           
+                                    </CardContent>
+                                </CardActionArea>
+                                <CardActions style={{ display:"flex", justifyContent:"center", alignItems:"center",  flexDirection:"column" }} >
+                                    
+                                    <div >
+                                    { startsQualification }
+                                    </div>
+                                    <div>
+                                        <Button size="small" color="primary" onClick={()=>selectDoctor(doctor)} >
+                                            Agendar cita
+                                        </Button>
+                                        <Button size="small" color="primary" onClick={()=>checkDoctorComments(doctor)} >
+                                            Comentarios
+                                        </Button>
+                                    </div>                                    
 
-                                    </CardActions>
-                                </Card>
-                            </GridItem>
-                        ))
-                    }                
+                                </CardActions>
+                            </Card>
+                        </GridItem>
+                    )
+                }    
+
                 
-                </Grid>
-                ))
-            }
+            </Grid>            
         </div>
 
         <br/>
@@ -255,8 +253,9 @@ export default function SectionDoctorsSearch(props) {
                             format="MM/dd/yyyy"   
                             value={selectedDate}                       
                             onChange={(date)=>{
+                                setAppointmentDate(null)
                                 setSelectedDate(date)
-                                console.log("selectedDoctor",selectedDoctor)
+                                //console.log("selectedDoctor",selectedDoctor)
                                 getDaySchedule(selectedDoctor.id, moment(date).format("YYYY-MM-DD"), (success,error)=>{
                                     if(success){
                                         //console.log("success",success)
@@ -342,7 +341,10 @@ export default function SectionDoctorsSearch(props) {
                     {
                         avaliableHours.map( avaliable => <Chip avatar={<DoneIcon/>} label={`${ minutesToHours(avaliable[0]) } -  ${ minutesToHours(avaliable[1]) }`}
                             onClick={()=>{
-                                console.log("clicked")
+                                const formatedDate = moment(selectedDate).utcOffset(0)
+                                formatedDate.set({hour:0,minute:0,second:0,millisecond:0})                                
+                                const appointmentDate = formatedDate.add(avaliable[0], 'minutes').format("YYYY-MM-DD HH:mm:ss")
+                                setAppointmentDate(appointmentDate)
                                 setOpenForm(true);  
                             }}
                         style={{margin:5}}  variant="outlined" />  )
@@ -358,7 +360,7 @@ export default function SectionDoctorsSearch(props) {
 
 
 
-        <React.Fragment key={"anchor"}>
+        <React.Fragment>
           <Drawer anchor={"right"} open={drawerOpen2} onClose={()=>setDrawerOpen2(false)}>
             <div style={{width:"25em"}} >
             
@@ -399,7 +401,7 @@ export default function SectionDoctorsSearch(props) {
           </Drawer>
         </React.Fragment>
 
-        <SectionPatientForm  open={openForm} setOpen={(option)=>{
+        <SectionPatientForm  open={openForm} appointmentDate={appointmentDate} setOpen={(option)=>{
             setOpenForm(option);
         }} />
     

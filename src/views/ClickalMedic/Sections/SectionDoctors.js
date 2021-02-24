@@ -55,7 +55,7 @@ export default function TeamSection(props) {
                 {
                   Array.from(Array(3).keys()).map( y => 
                     ( doctors[(x*3)+y] &&  
-                      <GridItem key={doctors[(x*3)+y]?.id} xs={12} sm={12} md={4}>
+                      <GridItem key={doctors[(x*3)+y]?.id} xs={12} sm={12} md={4} sm={3} >
                         <Card plain>
                           <GridItem xs={12} sm={12} md={6} className={classes.itemGrid}>
                             <img src={  process.env.REACT_APP_SERVE_IMAGE + doctors[(x*3)+y]?.picture }
