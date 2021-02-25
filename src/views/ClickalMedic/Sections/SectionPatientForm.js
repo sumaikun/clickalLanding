@@ -1,4 +1,4 @@
-import React,{ useState, useEffect } from 'react';
+import React,{ useState, useEffect, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -7,11 +7,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import  api  from '../../../middleware/api'
+import Swal from 'sweetalert2' 
 
 
 export default function SectionPatientForm(props) {
 
-  const { open, setOpen, appointmentDate } = props;
+  const { open, setOpen, appointmentDate, cityAppointment } = props;
 
   
   const handleClose = () => {
@@ -20,6 +21,24 @@ export default function SectionPatientForm(props) {
 
   const [typesId, setTypesId ] = useState([]);
 
+  const [formData, setFormData ] = useState({
+    name:"",
+    lastName:"",
+    typeId:"",
+    identification:"",
+    city:"",
+    phone:"",
+    ocupation:"",
+    email:""
+  })
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]:e.target.value 
+    })
+  }
+ 
   useEffect(() => {
     
     const getDocumentsTypes = async () => {
@@ -35,6 +54,35 @@ export default function SectionPatientForm(props) {
 
   },[]);
 
+  useEffect(()=>{
+
+    if(appointmentDate){
+      console.log("appointmentDate",appointmentDate)
+      setFormData({...formData,appointmentDate})
+    }
+
+    if(cityAppointment){
+      setFormData({...formData,city:cityAppointment})
+    }
+
+  },[appointmentDate, cityAppointment])
+
+  const formRef = useRef();
+
+  const handleSaveAppointment = async (e) => {
+    e.preventDefault()
+    console.log("submit form",formData)
+    const response = await api.postData("registerPatientWithAppointment", { ...formData, appointmentDate, city:cityAppointment  }) 
+    console.log("response",response)
+    if(response.status != 200)
+    {
+      alert("Sucedio un error")
+    }else{
+      handleClose("close")
+      Swal.fire("Cita agendada","espera a que nos comuniquemos contigo","success")
+    }
+  }
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
@@ -44,9 +92,10 @@ export default function SectionPatientForm(props) {
             Necesitamos los siguientes datos para agendarte la cita y comunicarnos contigo.
           </DialogContentText>
           
-          <form>
+          <form  onSubmit={handleSaveAppointment} >
 
-            <TextField  autoFocus  margin="dense" id="name" label="Correo electrónico" type="email" autoComplete={false} fullWidth />
+            <TextField  autoFocus  margin="dense" id="name" label="Correo electrónico" type="email" autoComplete={false}
+             required fullWidth  name="email" onChange={handleChange}/>
 
             <TextField fullWidth label="Tipo de identificación" margin="dense" name="typeId" 
                 required select
@@ -54,6 +103,8 @@ export default function SectionPatientForm(props) {
                 SelectProps={{ native: true }}
                 //InputLabelProps={{ shrink: !!props.patientDetails.typeId }}                  
                 variant="outlined"
+                required
+                name="typeId" onChange={handleChange}
               >
                 {typesId.map(option => (
                   <option
@@ -67,17 +118,22 @@ export default function SectionPatientForm(props) {
 
      
             <TextField fullWidth label="Número de identificación"  margin="dense" name="identification" type="number"
-                required variant="outlined" autoComplete={false}                
+                required variant="outlined" required autoComplete={false} onChange={handleChange}               
               />
           
-            <TextField fullWidth label="Ocupación" margin="dense" name="ocupation" required variant="outlined" autoComplete={false} />
+            <TextField fullWidth label="Ocupación" margin="dense" name="ocupation" required variant="outlined"
+             required autoComplete={false} onChange={handleChange} />
 
             <TextField fullWidth label="Número de teléfono" margin="dense" name="phone" type="number"
-                required variant="outlined" autoComplete={false} />
+                required variant="outlined" required autoComplete={false} onChange={handleChange} />
 
-            <TextField fullWidth label="Nombre" margin="dense" name="name" required variant="outlined" autoComplete={false} />
+            <TextField fullWidth label="Nombre" margin="dense" name="name" onChange={handleChange}
+             required variant="outlined" required autoComplete={false} />
 
-            <TextField fullWidth label="Apellidos" margin="dense" name="lastName" required variant="outlined" autoComplete={false} />
+            <TextField fullWidth label="Apellidos" margin="dense" name="lastName" onChange={handleChange}
+             required variant="outlined" required autoComplete={false} />
+
+            <input type="submit" ref={formRef} style={{visibility:"hidden"}} />
 
           </form>
           
@@ -86,7 +142,9 @@ export default function SectionPatientForm(props) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={()=>{
+           formRef.current.click()
+          }} color="primary">
             Agendar cita
           </Button>
         </DialogActions>
