@@ -78,8 +78,16 @@ export default function SectionPatientForm(props) {
     {
       alert("Sucedio un error")
     }else{
-      handleClose("close")
-      Swal.fire("Cita agendada","espera a que nos comuniquemos contigo","success")
+      setOpen("close")
+      handleClose()
+      if(response.data.status == "exists")
+      {
+        Swal.fire("Espera","ya tienes una cita asignada para este día","warning")
+      }
+      if(response.data.status == "ok")
+      {
+        Swal.fire("Cita agendada","espera a que nos comuniquemos contigo","success")
+      }
     }
   }
 

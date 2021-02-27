@@ -69,7 +69,7 @@ function Components(props) {
 
 		window.typingTime = setTimeout(() => {
       
-      console.log(searchText.length == 0)
+      //console.log(searchText.length == 0)
 
       if( searchText.length == 0 )
       {

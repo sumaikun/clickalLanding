@@ -255,6 +255,41 @@ export default function SectionDoctorsSearch(props) {
                             format="MM/dd/yyyy"   
                             value={selectedDate}                       
                             onChange={(date)=>{
+
+                                console.log("moment().day()",moment(date).day(),selectedDoctor?.settings.daysRange)
+                                let notValidDay = false
+
+                                switch (moment(date).day()) {
+                                    case 1:
+                                        notValidDay = selectedDoctor?.settings.daysRange.indexOf("Mon") == -1
+                                        break;
+                                    case 2:
+                                        notValidDay = selectedDoctor?.settings.daysRange.indexOf("Tue") == -1
+                                        break;
+                                    case 3:
+                                        notValidDay = selectedDoctor?.settings.daysRange.indexOf("Wed") == -1
+                                        break;
+                                    case 4:
+                                        notValidDay = selectedDoctor?.settings.daysRange.indexOf("Thurs") == -1
+                                        break;
+                                    case 5:
+                                        notValidDay = selectedDoctor?.settings.daysRange.indexOf("Frid") == -1
+                                        break;
+                                    case 6:
+                                        notValidDay = selectedDoctor?.settings.daysRange.indexOf("Sat") == -1
+                                        break;
+                                    case 7:
+                                        notValidDay = selectedDoctor?.settings.daysRange.indexOf("Sun") == -1
+                                        break;
+                                }
+
+                                if(notValidDay)
+                                {
+                                    setOpenForm(false);
+                                    setDrawerOpen(false)
+                                    return Swal.fire("Espera","Este día el medico no atiende citas","warning")
+                                }
+
                                 setAppointmentDate(null)
                                 setSelectedDate(date)
                                 //console.log("selectedDoctor",selectedDoctor)
@@ -335,7 +370,7 @@ export default function SectionDoctorsSearch(props) {
                             KeyboardButtonProps={{
                             'aria-label': 'change date',
                             }}
-                            //minDate={ new moment().add('days', 1) }
+                            minDate={ new moment().add('days', 1) }
                         />
 
                     </Grid>
@@ -408,6 +443,7 @@ export default function SectionDoctorsSearch(props) {
         <SectionPatientForm  open={openForm} appointmentDate={appointmentDate} 
             cityAppointment={cityAppointment}
             setOpen={(option)=>{
+                console.log("option",option)
                 if(option === "close")
                 {
                     setOpenForm(option);

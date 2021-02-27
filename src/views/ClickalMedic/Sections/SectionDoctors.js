@@ -31,7 +31,7 @@ export default function TeamSection(props) {
 
   const { doctors } = props
 
-  console.log("doctors.length",doctors.length)
+  //console.log("doctors.length",doctors.length)
 
   const startsQualification = <>
     <Button justIcon color="transparent" className={classes.margin5}><i className={classes.socials + " fas fa-star"} /></Button>
