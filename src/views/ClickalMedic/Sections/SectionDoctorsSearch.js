@@ -79,6 +79,8 @@ export default function SectionDoctorsSearch(props) {
 
   const [ cityAppointment, setCityAppointment ] = React.useState(null)
 
+  const [ doctorAppointment, setDoctorAppointment ] = React.useState(null)
+
   const selectDoctor = (doctor) => {
       console.log("doctor",doctor)
       setSelectedDoctor(doctor)
@@ -292,9 +294,9 @@ export default function SectionDoctorsSearch(props) {
 
                                 setAppointmentDate(null)
                                 setSelectedDate(date)
-                                //console.log("selectedDoctor",selectedDoctor)
-                                //console.log("city",selectedDoctor.CityDetails[0]._id)
                                 setCityAppointment(selectedDoctor.CityDetails[0]._id)
+                                setDoctorAppointment(selectedDoctor.id)
+
                                 getDaySchedule(selectedDoctor.id, moment(date).format("YYYY-MM-DD"), (success,error)=>{
                                     if(success){
                                         //console.log("success",success)
@@ -441,7 +443,7 @@ export default function SectionDoctorsSearch(props) {
         </React.Fragment>
 
         <SectionPatientForm  open={openForm} appointmentDate={appointmentDate} 
-            cityAppointment={cityAppointment}
+            cityAppointment={cityAppointment} doctorAppointment={doctorAppointment}
             setOpen={(option)=>{
                 console.log("option",option)
                 if(option === "close")
@@ -451,8 +453,7 @@ export default function SectionDoctorsSearch(props) {
                 }
                 else{
                     setOpenForm(option);
-                }
-                 
+                }                 
             }} 
         />
     

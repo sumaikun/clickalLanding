@@ -12,8 +12,7 @@ import Swal from 'sweetalert2'
 
 export default function SectionPatientForm(props) {
 
-  const { open, setOpen, appointmentDate, cityAppointment } = props;
-
+  const { open, setOpen, appointmentDate, cityAppointment, doctorAppointment } = props;
   
   const handleClose = () => {
     setOpen(false);
@@ -57,7 +56,7 @@ export default function SectionPatientForm(props) {
   useEffect(()=>{
 
     if(appointmentDate){
-      console.log("appointmentDate",appointmentDate)
+      //console.log("appointmentDate",appointmentDate)
       setFormData({...formData,appointmentDate})
     }
 
@@ -72,7 +71,7 @@ export default function SectionPatientForm(props) {
   const handleSaveAppointment = async (e) => {
     e.preventDefault()
     console.log("submit form",formData)
-    const response = await api.postData("registerPatientWithAppointment", { ...formData, appointmentDate, city:cityAppointment  }) 
+    const response = await api.postData("registerPatientWithAppointment", { ...formData, appointmentDate, city:cityAppointment, doctor:doctorAppointment  }) 
     console.log("response",response)
     if(response.status != 200)
     {
