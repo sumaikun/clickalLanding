@@ -140,6 +140,24 @@ export default function SectionPatientForm(props) {
             <TextField fullWidth label="Apellidos" margin="dense" name="lastName" onChange={handleChange}
              required variant="outlined" required autoComplete={false} />
 
+            <TextField
+                fullWidth
+                label="Sexo"
+                margin="dense"
+                name="sex"
+                onChange={handleChange}
+                required
+                select
+                // eslint-disable-next-line react/jsx-sort-props
+                SelectProps={{ native: true }}
+                variant="outlined"
+              >
+                <option  value={""}></option>
+                <option key={"M"} value={"M"}>Masculino</option>
+                <option key={"F"} value={"F"}>Femenino</option>
+              
+            </TextField>
+
             <input type="submit" ref={formRef} style={{visibility:"hidden"}} />
 
           </form>
